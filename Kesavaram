@@ -1,0 +1,167 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to store student information
+struct Student {
+    int id;
+    char name[50];
+    struct Student* next;
+};
+
+struct Student* head = NULL;
+
+// Function to add a student
+void addStudent(int id, char name[]) {
+    struct Student* newStudent = (struct Student*)malloc(sizeof(struct Student));
+    newStudent->id = id;
+    strcpy(newStudent->name, name);
+    newStudent->next = NULL;
+
+    if (head == NULL) {
+        head = newStudent;
+    } else {
+        struct Student* temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newStudent;
+    }
+
+    printf("Student added successfully!\n");
+}
+
+// Function to drop a student
+void dropStudent(int id) {
+    struct Student *temp = head, *prev = NULL;
+
+    if (temp != NULL && temp->id == id) {
+        head = temp->next;
+        free(temp);
+        printf("Student removed successfully!\n");
+        return;
+    }
+
+    while (temp != NULL && temp->id != id) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Student not found!\n");
+        return;
+    }
+
+    prev->next = temp->next;
+    free(temp);
+    printf("Student removed successfully!\n");
+}
+
+// Function to search a student
+void searchStudent(int id) {
+    struct Student* temp = head;
+    while (temp != NULL) {
+        if (temp->id == id) {
+            printf("Student found: %s (ID: %d)\n", temp->name, temp->id);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Student not found!\n");
+}
+
+// Function to display all students
+void displayStudents() {
+    struct Student* temp = head;
+    if (temp == NULL) {
+        printf("No students enrolled!\n");
+        return;
+    }
+
+    printf("List of Enrolled Students:\n");
+    while (temp != NULL) {
+        printf("ID: %d | Name: %s\n", temp->id, temp->name);
+        temp = temp->next;
+    }
+}
+
+// Function to reverse the linked list
+void reverseList() {
+    struct Student *prev = NULL, *current = head, *next = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+
+    head = prev;
+    printf("Student list reversed successfully!\n");
+}
+
+// Main program
+int main() {
+    int choice, id;
+    char name[50];
+
+    while (1) {
+        printf("\n--- COURSE ENROLLMENT MANAGEMENT SYSTEM ---\n");
+        printf("1. Add Student\n");
+        printf("2. Drop Student\n");
+        printf("3. Search Student\n");
+        printf("4. Display Students\n");
+        printf("5. Reverse Student List\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 6) {
+            printf("Exiting program.\n");
+            break;
+        }
+
+        switch (choice) {
+            case 1:
+                printf("Enter Student ID: ");
+                scanf("%d", &id);
+                printf("Enter Student Name: ");
+                scanf("%s", name);  // simpler input
+                addStudent(id, name);
+                break;
+
+            case 2:
+                printf("Enter Student ID to drop: ");
+                scanf("%d", &id);
+                dropStudent(id);
+                break;
+
+            case 3:
+                printf("Enter Student ID to search: ");
+                scanf("%d", &id);
+                searchStudent(id);
+                break;
+
+            case 4:
+                displayStudents();
+                break;
+
+            case 5:
+                reverseList();
+                break;
+
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+
+    // Free memory before exit
+    struct Student* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+
+    return 0;
+}
